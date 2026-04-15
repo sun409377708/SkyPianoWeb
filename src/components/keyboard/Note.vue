@@ -5,6 +5,7 @@
         <Shape v-if="type === 'muti' || type === 'circle'" shape="circle" />
         <Shape v-if="type === 'muti' || type === 'rect'" shape="rect" />
       </div>
+      <div class="key-label" v-if="keyLabel">{{ keyLabel }}</div>
     </div>
   </div>
 </template>
@@ -15,7 +16,7 @@ import Shape from './Shape.vue'
 
 export default {
   name: 'Note',
-  props: ['type'],
+  props: ['type', 'keyLabel'],
   components: {
     Shape
   },
@@ -130,5 +131,30 @@ export default {
 
 .cicle::after {
   border-radius: 50%;
+}
+
+.key-label {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fefcb2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: monospace;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(254, 252, 178, 0.3);
+}
+
+.note--active .key-label {
+  background: rgba(254, 252, 178, 0.9);
+  color: #333;
+  transform: translateX(-50%) scale(1.1);
+  transition: all 0.1s ease;
 }
 </style>

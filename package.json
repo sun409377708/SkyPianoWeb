@@ -1,45 +1,36 @@
 {
   "name": "sky-piano",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "private": true,
   "author": "Vincent Lee <vv314@foxmail.com>",
+  "type": "module",
   "scripts": {
-    "build": "marax build",
-    "test": "marax test",
-    "dev": "marax dev",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "deploy": "node build/deploy"
   },
   "homepage": "https://vv314.github.io/sky-piano",
   "dependencies": {
-    "howler": "^2.1.2",
-    "midi-player-js": "^2.0.5",
-    "tone": "^13.4.9",
-    "vue": "^2.6.10"
+    "howler": "^2.2.4",
+    "midi-player-js": "^2.0.17",
+    "midi-writer-js": "^2.1.4",
+    "tone": "^15.0.4",
+    "vue": "^3.4.21"
   },
   "devDependencies": {
-    "@mara/x": "^2.5.0",
-    "gh-pages": "^2.0.1",
-    "husky": "^3.0.0",
-    "lint-staged": "^9.2.0",
-    "midi-file": "^1.1.1",
-    "node-sass": "^4.12.0",
-    "prettier": "^1.18.2",
-    "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.6.10",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "gh-pages": "^6.1.1",
+    "lint-staged": "^15.2.2",
+    "midi-file": "^1.2.4",
+    "prettier": "^3.2.5",
+    "sass": "^1.72.0",
+    "vite": "^5.2.0",
     "wintip": "^1.5.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
-    "*.{js,md,css}": [
-      "prettier --write",
-      "git add"
+    "*.{js,vue,md,css,scss}": [
+      "prettier --write"
     ]
-  },
-  "eslintConfig": {
-    "extends": "eslint-config-sinamfe"
   }
 }

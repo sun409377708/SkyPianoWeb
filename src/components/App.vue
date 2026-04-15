@@ -1,11 +1,14 @@
 <template>
-  <div id="app" :style="frameStyle">
+  <div class="sky-piano-app" :style="frameStyle">
+    <AutoPlayPanel :keyboard="keyboard" :manualPlayEvent="manualPlayEvent" />
+    <!-- <KeyboardHint /> -->
+    
     <Droparea class="main" @drop="onDropMidi" accept="audio/midi">
-      <Keyboard ref="keyboard" @play="onPlay" />
+      <Keyboard ref="keyboardRef" @play="onPlay" @manualPlay="onManualPlay" />
     </Droparea>
 
     <Waveline
-      ref="waveline"
+      ref="wavelineRef"
       amplitude="0.5"
       speed="0.01"
       :width="stageSize.width"
@@ -17,132 +20,132 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted, provide } from 'vue'
 import Keyboard from './keyboard/Layout.vue'
 import Droparea from './Droparea.vue'
 import Waveline from './Waveline.vue'
 import Version from './Version.vue'
 import SetBg from './SetBg.vue'
+import KeyboardHint from './KeyboardHint.vue'
+import AutoPlayPanel from './AutoPlayPanel.vue'
 import { fixOrientation } from '../lib/clientSize'
 import defaultBgUrl from '../assets/bg.jpg'
 import eventBus from '../lib/events'
-import wintip from '../lib/wintip'
 
-export default {
-  name: 'app',
-  components: {
-    Droparea,
-    Keyboard,
-    Waveline,
-    Version,
-    SetBg
-  },
-  data() {
-    return {
-      stageSize: fixOrientation(),
-      bgUrl: defaultBgUrl,
-      tracks: 0
-    }
-  },
-  provide() {
-    return {
-      getPlayer: this.getPlayer
-    }
-  },
-  computed: {
-    frameStyle() {
-      const { width, height } = this.stageSize
+const keyboardRef = ref(null)
+const wavelineRef = ref(null)
+const stageSize = ref(fixOrientation())
+const bgUrl = ref(defaultBgUrl)
+const tracks = ref(0)
+const keyboard = ref(null)
+const manualPlayEvent = ref(null)
 
-      return {
-        backgroundImage: `url(${this.bgUrl})`,
-        height: height + 'px',
-        width: width + 'px'
-      }
-    }
-  },
-  created() {
-    const bgUrl = localStorage.getItem('bgUrl')
+let _playerPromise = null
 
-    if (bgUrl) {
-      this.bgUrl = bgUrl
-    }
-  },
-  mounted() {
-    this.keyboard = this.$refs.keyboard
-    this.initWaveLine()
-
-    window.addEventListener(
-      'resize',
-      () => {
-        this.stageSize = fixOrientation()
-      },
-      false
-    )
-  },
-  methods: {
-    changeBg(url) {
-      this.bgUrl = url
-      localStorage.setItem('bgUrl', url)
-    },
-    initWaveLine() {
-      this.$refs.waveline.start()
-    },
-    onPlay(note) {
-      this.$refs.waveline.touch()
-    },
-    getPlayer() {
-      if (this._playerPromise) {
-        return this._playerPromise
-      }
-
-      this._playerPromise = import('../lib/midiPlayer')
-        .then(mod => mod.default)
-        .then(player => {
-          return player.setEventProxy(eventBus)
-        })
-
-      eventBus.on('player:fileLoaded', ctx => {
-        this.tracks = ctx.tracks.length
-      })
-
-      eventBus.on('player:midiEvent', e => {
-        const note = e.noteName
-
-        if (e.name === 'Note on') {
-          if (e.velocity > 0) {
-            this.keyboard.tapdown(note, e.channel)
-          } else {
-            this.keyboard.tapup(note)
-          }
-        } else if (e.name === 'Note off') {
-          this.keyboard.tapup(note)
-        }
-      })
-
-      eventBus.on('player:play', () => {
-        console.log('[player] play')
-      })
-
-      eventBus.on('player:sleep', () => {
-        this.keyboard.release()
-        console.log('[player] sleep')
-      })
-
-      console.log('[player] regist')
-
-      return this._playerPromise
-    },
-    onDropMidi(res) {
-      this.getPlayer().then(player => {
-        player.stop()
-
-        if (res.code === 0) {
-          player.load(res.data, res.file).play()
-
-          console.log('play', res.file)
-        }
-      })
-    }
+const frameStyle = computed(() => {
+  const { width, height } = stageSize.value
+  return {
+    backgroundImage: `url(${bgUrl.value})`,
+    height: height + 'px',
+    width: width + 'px'
   }
+})
+
+const changeBg = (url) => {
+  bgUrl.value = url
+  localStorage.setItem('bgUrl', url)
 }
+
+const initWaveLine = () => {
+  wavelineRef.value?.start()
+}
+
+const onPlay = (note) => {
+  wavelineRef.value?.touch(1)
+}
+
+const onManualPlay = (event) => {
+  // 传递手动演奏事件给AutoPlayPanel
+  // 每次创建新对象，确保watch能触发
+  manualPlayEvent.value = {
+    ...event,
+    timestamp: Date.now()
+  }
+  console.log('🎹 手动演奏:', event)
+}
+
+const getPlayer = () => {
+  if (_playerPromise) {
+    return _playerPromise
+  }
+
+  _playerPromise = import('../lib/midiPlayer')
+    .then(mod => mod.default)
+    .then(player => {
+      return player.setEventProxy(eventBus)
+    })
+
+  eventBus.on('player:fileLoaded', ctx => {
+    tracks.value = ctx.tracks.length
+  })
+
+  eventBus.on('player:midiEvent', e => {
+    const note = e.noteName
+
+    if (e.name === 'Note on') {
+      if (e.velocity > 0) {
+        keyboard.value?.tapdown(note, e.channel)
+      } else {
+        keyboard.value?.tapup(note)
+      }
+    } else if (e.name === 'Note off') {
+      keyboard.value?.tapup(note)
+    }
+  })
+
+  eventBus.on('player:play', () => {
+    console.log('[player] play')
+  })
+
+  eventBus.on('player:sleep', () => {
+    keyboard.value?.release()
+    console.log('[player] sleep')
+  })
+
+  console.log('[player] regist')
+
+  return _playerPromise
+}
+
+const onDropMidi = (res) => {
+  getPlayer().then(player => {
+    player.stop()
+
+    if (res.code === 0) {
+      player.load(res.data, res.file).play()
+      console.log('play', res.file)
+    }
+  })
+}
+
+provide('getPlayer', getPlayer)
+
+onMounted(() => {
+  keyboard.value = keyboardRef.value
+  initWaveLine()
+
+  const savedBgUrl = localStorage.getItem('bgUrl')
+  if (savedBgUrl) {
+    bgUrl.value = savedBgUrl
+  }
+
+  window.addEventListener(
+    'resize',
+    () => {
+      stageSize.value = fixOrientation()
+    },
+    false
+  )
+})
 </script>

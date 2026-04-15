@@ -40,48 +40,50 @@ export default {
         // lerpSpeed: 1
       })
 
-      const bind = name => wave[name].bind(wave)
+      // 保存wave实例供其他方法使用
+      this.wave = wave
+    },
+    resizeWave() {
+      if (!this.wave) return
+      
+      const { width } = this
+      const height = 80
 
-      this.$on('wave:start', bind('start'))
-      this.$on('wave:stop', bind('stop'))
-      this.$on('wave:setSpeed', bind('setSpeed'))
-      this.$on('wave:stop', bind('setAmplitude'))
-
-      // Update the height of the wave animation.
-      // These are basically some hacks to get SiriWave.js to do what we want.
-      this.$on('wave:resize', () => {
-        const { width } = this
-        const height = 80
-
-        wave.height = height
-        wave.height_2 = height / 2
-        wave.MAX = wave.height_2 - 4
-        wave.width = width
-        wave.width_2 = width / 2
-        wave.width_4 = width / 4
-        wave.canvas.height = height
-        wave.canvas.width = width
-        wave.container.style.margin = -(height / 2) + 'px auto'
-      })
+      this.wave.height = height
+      this.wave.height_2 = height / 2
+      this.wave.MAX = this.wave.height_2 - 4
+      this.wave.width = width
+      this.wave.width_2 = width / 2
+      this.wave.width_4 = width / 4
+      this.wave.canvas.height = height
+      this.wave.canvas.width = width
+      this.wave.container.style.margin = -(height / 2) + 'px auto'
     },
     start() {
-      this.$emit('wave:start')
-
+      if (this.wave) {
+        this.wave.start()
+      }
       // 开启心跳监测，计算点击速率
       this.initRateRecord()
     },
     stop() {
-      this.$emit('wave:stop')
+      if (this.wave) {
+        this.wave.stop()
+      }
     },
     setSpeed(val) {
       // 节流
       if (this.currentSpeed === val) return
 
-      this.$emit('wave:setSpeed', val)
+      if (this.wave && this.wave.setSpeed) {
+        this.wave.setSpeed(val)
+      }
       this.currentSpeed = val
     },
     setAmplitude(val) {
-      this.$emit('wave:setAmplitude', val)
+      if (this.wave && this.wave.setAmplitude) {
+        this.wave.setAmplitude(val)
+      }
     },
     touch(amplitude) {
       const fps = this.stopwatch.tick().checkBeats('fps', 5)

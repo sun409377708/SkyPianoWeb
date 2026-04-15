@@ -47,7 +47,7 @@ function getCache(name) {
 }
 
 async function getMid(name, preset) {
-  const baseUrl = process.env.PUBLIC_URL + '/static/midi/'
+  const baseUrl = (import.meta.env.BASE_URL || '') + 'static/midi/'
   const url = preset ? baseUrl + name : name
   const response = await fetch(url)
 

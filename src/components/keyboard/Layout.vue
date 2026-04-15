@@ -1,10 +1,14 @@
 <template>
   <div class="keyboard">
     <ul class="keyboard_wrap">
-      <li v-for="item in list" :data-tapitem="item.note">
+      <li v-for="(item, index) in list" :key="item.note" :data-tapitem="item.note">
         <!-- 封装点击与触摸 -->
         <Tap :tid="item.note" @tapdown="tapdown" @tapup="tapup">
-          <Note :ref="'n_' + item.note" :type="item.shape" />
+          <Note 
+            :ref="el => { if (el) noteRefs['n_' + item.note] = el }" 
+            :type="item.shape"
+            :keyLabel="getKeyLabel(index)"
+          />
         </Tap>
       </li>
     </ul>
@@ -32,7 +36,8 @@ export default {
   },
   data() {
     return {
-      list: createKeyboard(conf)
+      list: createKeyboard(conf),
+      noteRefs: {}
     }
   },
   created() {
@@ -41,7 +46,17 @@ export default {
   mounted() {
     this.synth = SmapleLibrary.load({
       instruments: 'piano'
-    }).toMaster()
+    }).toDestination()
+    
+    // 启用键盘映射
+    this.initKeyboardMapping()
+  },
+  beforeUnmount() {
+    // 清理键盘事件监听
+    if (this.handleKeyDown) {
+      window.removeEventListener('keydown', this.handleKeyDown)
+      window.removeEventListener('keyup', this.handleKeyUp)
+    }
   },
   methods: {
     play(noteName) {
@@ -58,18 +73,81 @@ export default {
       this.tapNote(noteName, 'up')
     },
     tapNote(noteName, action) {
-      const ins = this.$refs[`n_${noteName}`]
+      const ins = this.noteRefs[`n_${noteName}`]
 
-      if (!ins || !ins[0]) return
+      if (!ins) return
 
       if (action === 'down') {
-        ins[0].tapdown()
+        ins.tapdown()
       } else {
-        ins[0].tapup()
+        ins.tapup()
       }
     },
     release() {
       this.list.forEach(e => this.tapNote(e.note, 'up'))
+    },
+    getKeyLabel(index) {
+      // 返回对应索引的键盘按键标签
+      const labels = ['Y', 'U', 'I', 'O', 'P', 'H', 'J', 'K', 'L', ';', 'N', 'M', ',', '.', '/']
+      return labels[index] || ''
+    },
+    initKeyboardMapping() {
+      // 键盘布局映射
+      const KEY_MAP = {
+        // 第一行：y u i o p
+        'y': 0, 'u': 1, 'i': 2, 'o': 3, 'p': 4,
+        // 第二行：h j k l ;
+        'h': 5, 'j': 6, 'k': 7, 'l': 8, ';': 9,
+        // 第三行：n m , . /
+        'n': 10, 'm': 11, ',': 12, '.': 13, '/': 14
+      }
+      
+      const pressedKeys = new Set()
+      
+      this.handleKeyDown = (event) => {
+        // 防止在输入框中触发
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+          return
+        }
+        
+        const key = event.key.toLowerCase()
+        
+        if (key in KEY_MAP && !pressedKeys.has(key)) {
+          event.preventDefault()
+          pressedKeys.add(key)
+          
+          const index = KEY_MAP[key]
+          if (index < this.list.length) {
+            const note = this.list[index].note
+            this.tapdown(note)
+            // 发出手动演奏事件
+            this.$emit('manualPlay', { index, key: key.toUpperCase(), note })
+          }
+        }
+      }
+      
+      this.handleKeyUp = (event) => {
+        const key = event.key.toLowerCase()
+        
+        if (key in KEY_MAP && pressedKeys.has(key)) {
+          event.preventDefault()
+          pressedKeys.delete(key)
+          
+          const index = KEY_MAP[key]
+          if (index < this.list.length) {
+            const note = this.list[index].note
+            this.tapup(note)
+          }
+        }
+      }
+      
+      window.addEventListener('keydown', this.handleKeyDown)
+      window.addEventListener('keyup', this.handleKeyUp)
+      
+      console.log('🎹 键盘映射已启用')
+      console.log('第一行: Y U I O P')
+      console.log('第二行: H J K L ;')
+      console.log('第三行: N M , . /')
     }
   }
 }

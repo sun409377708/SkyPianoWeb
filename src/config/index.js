@@ -1,6 +1,6 @@
 import { getUrlParam } from '../lib/util'
 
-const isDebug = process.env.NODE_ENV === 'development' || getUrlParam('__debug')
-const version = process.env.VERSION
+const isDebug = import.meta.env.DEV || getUrlParam('__debug')
+const version = import.meta.env.VITE_VERSION || '0.7.0'
 
 export default { isDebug, version }

@@ -5,7 +5,7 @@
  * https://github.com/nbrosowsky/tonejs-instruments
  */
 
-import Tone from 'tone'
+import * as Tone from 'tone'
 
 document.querySelector('body').addEventListener(
   'click',
@@ -84,7 +84,7 @@ const NotesMap = {
 const SampleLibrary = {
   minify: false,
   ext: '.[mp3|ogg]', // use setExt to change the extensions on all files // do not change this variable //
-  baseUrl: process.env.PUBLIC_URL + '/static/media/',
+  baseUrl: (import.meta.env.BASE_URL || '') + 'static/media/',
   list: [
     'bass-electric',
     'bassoon',
@@ -165,7 +165,8 @@ const SampleLibrary = {
           })
         }
 
-        rt[t.instruments[i]] = new Tone.Sampler(newT, {
+        rt[t.instruments[i]] = new Tone.Sampler({
+          urls: newT,
           baseUrl: t.baseUrl + t.instruments[i] + '/',
           onload: t.onload
         })
@@ -198,7 +199,8 @@ const SampleLibrary = {
         })
       }
 
-      var s = new Tone.Sampler(newT, {
+      var s = new Tone.Sampler({
+        urls: newT,
         baseUrl: t.baseUrl + t.instruments + '/',
         onload: t.onload
       })
