@@ -11,6 +11,9 @@
 # bundle report
 /report
 
+# build output
+/dist
+
 # misc
 .DS_Store
 .vscode
