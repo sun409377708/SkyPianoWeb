@@ -1,11 +1,6 @@
-import { Player } from 'midi-player-js'
-// const { Player } = require('midi-player-js')
-// var fs = require('fs')
-// const { parseMidi } = require('midi-file')
+import MidiPlayer from 'midi-player-js'
 
-// const file = process.cwd() + '/src/assets/star.mid'
-// const input = fs.readFileSync(file)
-
+const Player = MidiPlayer.Player || MidiPlayer
 const player = new Player()
 const _cacheMap = { __sort__: [] }
 // 是否全曲播放结束
