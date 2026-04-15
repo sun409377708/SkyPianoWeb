@@ -44,9 +44,21 @@
   opacity: 0;
 }
 
+/* 移动端横屏适配 */
 @media screen and (orientation: portrait) {
   #app,
   .sky-piano-app {
+    /* 竖屏时旋转90度，强制横屏显示 */
     transform: translate(-50%, -50%) rotate(90deg);
+    transform-origin: center center;
+  }
+}
+
+/* 确保横屏时不旋转 */
+@media screen and (orientation: landscape) {
+  #app,
+  .sky-piano-app {
+    transform: translate(-50%, -50%) rotate(0deg);
+    transform-origin: center center;
   }
 }
