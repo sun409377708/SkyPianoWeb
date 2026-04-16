@@ -59,7 +59,7 @@ export default {
       }
 
       return {
-        transform: `rotateZ(${this.angle}deg) rotateY(${180 * random(1)}deg)`
+        transform: `rotateZ(${this.angle}deg)`
       }
     }
   },

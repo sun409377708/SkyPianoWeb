@@ -168,8 +168,11 @@ const SampleLibrary = {
         rt[t.instruments[i]] = new Tone.Sampler({
           urls: newT,
           baseUrl: t.baseUrl + t.instruments[i] + '/',
-          onload: t.onload
-        })
+          onload: t.onload,
+          onerror: (error) => {
+            console.warn('音频加载失败:', error)
+          }
+        }).toDestination()
       }
 
       return rt
@@ -202,8 +205,11 @@ const SampleLibrary = {
       var s = new Tone.Sampler({
         urls: newT,
         baseUrl: t.baseUrl + t.instruments + '/',
-        onload: t.onload
-      })
+        onload: t.onload,
+        onerror: (error) => {
+          console.warn('音频加载失败:', error)
+        }
+      }).toDestination()
 
       return s
     }
