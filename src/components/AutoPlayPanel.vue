@@ -308,6 +308,24 @@ export default {
   max-width: 400px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   border: 2px solid rgba(254, 252, 178, 0.3);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px), screen and (max-height: 500px) {
+  .panel-content {
+    min-width: 280px;
+    max-width: 320px;
+    padding: 12px;
+    max-height: 60vh;
+    font-size: 14px;
+  }
+  
+  .panel-content h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
 }
 
 .panel-content h3 {
@@ -333,6 +351,13 @@ export default {
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s;
+}
+
+@media screen and (max-width: 768px), screen and (max-height: 500px) {
+  .song-btn {
+    padding: 8px;
+    font-size: 12px;
+  }
 }
 
 .song-btn:hover {

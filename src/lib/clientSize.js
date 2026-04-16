@@ -28,22 +28,12 @@ function getSize() {
 function fixOrientation() {
   const clientSize = getSize()
   
-  // 始终确保横屏模式：宽度 > 高度
-  // 如果当前是竖屏（高度 > 宽度），则交换宽高
-  if (clientSize.height > clientSize.width) {
-    const info = { 
-      width: clientSize.height, 
-      height: clientSize.width 
-    }
-    console.log('横屏模式（交换宽高）:', 'width', info.width, 'height', info.height)
-    wintip.$('screen')('横屏,', 'width', info.width, 'height', info.height)
-    return info
-  } else {
-    // 已经是横屏，直接使用
-    console.log('横屏模式（保持）:', 'width', clientSize.width, 'height', clientSize.height)
-    wintip.$('screen')('横屏,', 'width', clientSize.width, 'height', clientSize.height)
-    return clientSize
-  }
+  // 不再交换宽高，让CSS媒体查询处理旋转
+  // 直接返回实际的视口尺寸
+  console.log('视口尺寸:', 'width', clientSize.width, 'height', clientSize.height)
+  wintip.$('screen')('视口,', 'width', clientSize.width, 'height', clientSize.height)
+  
+  return clientSize
 }
 
 function forceLandscape(clientSize) {

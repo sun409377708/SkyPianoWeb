@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>旋转测试</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    
+    .container {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-family: Arial;
+    }
+    
+    /* 方案1: 顺时针90度 */
+    .rotate-90 {
+      width: 100vh;
+      height: 100vw;
+      transform: translate(-50%, -50%) rotate(90deg);
+    }
+    
+    /* 方案2: 逆时针90度 */
+    .rotate-minus-90 {
+      width: 100vh;
+      height: 100vw;
+      transform: translate(-50%, -50%) rotate(-90deg);
+    }
+    
+    /* 横屏时不旋转 */
+    @media screen and (orientation: landscape) {
+      .container {
+        width: 100vw;
+        height: 100vh;
+        transform: translate(-50%, -50%);
+      }
+    }
+    
+    .text {
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .arrow {
+      font-size: 48px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container rotate-90" id="container">
+    <div class="text">
+      <div>顺时针 90°</div>
+      <div class="arrow">⬆️ 这是顶部</div>
+      <div>如果看到这个箭头指向左侧，说明方向正确</div>
+      <div style="margin-top: 20px;">
+        <button onclick="switchRotate()" style="padding: 10px 20px; font-size: 16px;">
+          切换旋转方向
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let isRotate90 = true;
+    
+    function switchRotate() {
+      const container = document.getElementById('container');
+      if (isRotate90) {
+        container.className = 'container rotate-minus-90';
+        container.querySelector('.text div:first-child').textContent = '逆时针 -90°';
+      } else {
+        container.className = 'container rotate-90';
+        container.querySelector('.text div:first-child').textContent = '顺时针 90°';
+      }
+      isRotate90 = !isRotate90;
+    }
+  </script>
+</body>
+</html>

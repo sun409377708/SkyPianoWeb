@@ -116,6 +116,15 @@ export default {
   overflow: hidden;
 }
 
+/* 移动端适配 */
+@media screen and (max-width: 768px), screen and (max-height: 500px) {
+  .sheet-display {
+    width: 90%;
+    max-width: 500px;
+    bottom: 60px;
+  }
+}
+
 .sheet-header {
   display: flex;
   justify-content: space-between;
@@ -158,10 +167,23 @@ export default {
   overflow-y: hidden;
 }
 
+@media screen and (max-width: 768px), screen and (max-height: 500px) {
+  .sheet-content {
+    padding: 8px 10px;
+    max-height: 80px;
+  }
+}
+
 .sheet-notes {
   display: flex;
   gap: 6px;
   padding: 5px 0;
+}
+
+@media screen and (max-width: 768px), screen and (max-height: 500px) {
+  .sheet-notes {
+    gap: 4px;
+  }
 }
 
 .note-item {
@@ -177,6 +199,14 @@ export default {
   justify-content: center;
   transition: all 0.3s;
   position: relative;
+}
+
+@media screen and (max-width: 768px), screen and (max-height: 500px) {
+  .note-item {
+    width: 35px;
+    height: 50px;
+    font-size: 12px;
+  }
 }
 
 .note-item.played {

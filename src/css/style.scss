@@ -3,8 +3,8 @@
 
 #app,
 .sky-piano-app {
-  height: 100vmin;
-  width: 100vmax;
+  width: 100vw;
+  height: 100vh;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -49,6 +49,14 @@
   #app,
   .sky-piano-app {
     /* 竖屏时旋转90度，强制横屏显示 */
+    /* 使用视口单位确保全屏 */
+    width: 100vh !important;
+    height: 100vw !important;
+    min-width: 100vh;
+    min-height: 100vw;
+    max-width: 100vh;
+    max-height: 100vw;
+    /* 先平移到中心，再旋转90度（顺时针） */
     transform: translate(-50%, -50%) rotate(90deg);
     transform-origin: center center;
   }
@@ -58,7 +66,13 @@
   #app,
   .sky-piano-app {
     /* 横屏时不旋转 */
-    transform: translate(-50%, -50%) rotate(0deg);
+    width: 100vw !important;
+    height: 100vh !important;
+    min-width: 100vw;
+    min-height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    transform: translate(-50%, -50%);
     transform-origin: center center;
   }
 }

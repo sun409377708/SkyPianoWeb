@@ -44,11 +44,9 @@ const manualPlayEvent = ref(null)
 let _playerPromise = null
 
 const frameStyle = computed(() => {
-  const { width, height } = stageSize.value
+  // 不再设置宽高，让CSS媒体查询完全控制
   return {
-    backgroundImage: `url(${bgUrl.value})`,
-    height: height + 'px',
-    width: width + 'px'
+    backgroundImage: `url(${bgUrl.value})`
   }
 })
 
