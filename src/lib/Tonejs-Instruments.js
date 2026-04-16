@@ -7,15 +7,30 @@
 
 import * as Tone from 'tone'
 
-document.querySelector('body').addEventListener(
-  'click',
-  () => {
-    // hack AudioContext 自动初始化问题
-    // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
-    Tone.start()
-  },
-  false
-)
+// 启动音频上下文
+const startAudio = () => {
+  // hack AudioContext 自动初始化问题
+  // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+  Tone.start().then(() => {
+    console.log('音频上下文已启动')
+  }).catch(err => {
+    console.warn('音频上下文启动失败:', err)
+  })
+}
+
+// 点击时启动音频
+document.querySelector('body').addEventListener('click', startAudio, false)
+
+// 全屏变化时重启音频
+const fullscreenChangeHandler = () => {
+  console.log('全屏状态变化，重启音频上下文')
+  startAudio()
+}
+
+document.addEventListener('fullscreenchange', fullscreenChangeHandler)
+document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler)
+document.addEventListener('mozfullscreenchange', fullscreenChangeHandler)
+document.addEventListener('MSFullscreenChange', fullscreenChangeHandler)
 
 const NotesMap = {
   C2: 'a49.mp3',

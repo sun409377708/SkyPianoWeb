@@ -60,17 +60,9 @@ export default {
   },
   methods: {
     play(noteName) {
-      // 检查音频buffer是否已加载
-      if (this.synth && this.synth.loaded) {
-        try {
-          this.synth.triggerAttackRelease(noteName)
-          this.$emit('play', noteName)
-        } catch (error) {
-          console.warn('播放音符失败:', noteName, error)
-        }
-      } else {
-        console.warn('音频尚未加载完成')
-      }
+      // 不指定持续时间，让音频样本完整播放到自然衰减
+      this.synth.triggerAttackRelease(noteName)
+      this.$emit('play', noteName)
     },
     tapdown(noteName, channel = 1) {
       this.play(noteName)

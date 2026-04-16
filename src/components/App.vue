@@ -36,7 +36,9 @@ import eventBus from '../lib/events'
 const keyboardRef = ref(null)
 const wavelineRef = ref(null)
 const stageSize = ref(fixOrientation())
-const bgUrl = ref(defaultBgUrl)
+// 优先使用localStorage中保存的背景图
+const savedBgUrl = localStorage.getItem('bgUrl')
+const bgUrl = ref(savedBgUrl || defaultBgUrl)
 const tracks = ref(0)
 const keyboard = ref(null)
 const manualPlayEvent = ref(null)
@@ -132,11 +134,6 @@ provide('getPlayer', getPlayer)
 onMounted(() => {
   keyboard.value = keyboardRef.value
   initWaveLine()
-
-  const savedBgUrl = localStorage.getItem('bgUrl')
-  if (savedBgUrl) {
-    bgUrl.value = savedBgUrl
-  }
 
   window.addEventListener(
     'resize',

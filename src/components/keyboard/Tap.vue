@@ -33,7 +33,31 @@ export default {
       pressMap: {}
     }
   },
-  mounted() {},
+  mounted() {
+    // 监听全屏变化，重置触摸事件状态
+    const fullscreenChangeHandler = () => {
+      // 重置全局触摸事件标记，确保全屏后事件正常
+      hasTouchEvt = false
+      isMouseDown = false
+      console.log('全屏状态变化，重置事件标记')
+    }
+    
+    document.addEventListener('fullscreenchange', fullscreenChangeHandler)
+    document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler)
+    document.addEventListener('mozfullscreenchange', fullscreenChangeHandler)
+    document.addEventListener('MSFullscreenChange', fullscreenChangeHandler)
+    
+    this._fullscreenHandler = fullscreenChangeHandler
+  },
+  beforeUnmount() {
+    // 清理事件监听
+    if (this._fullscreenHandler) {
+      document.removeEventListener('fullscreenchange', this._fullscreenHandler)
+      document.removeEventListener('webkitfullscreenchange', this._fullscreenHandler)
+      document.removeEventListener('mozfullscreenchange', this._fullscreenHandler)
+      document.removeEventListener('MSFullscreenChange', this._fullscreenHandler)
+    }
+  },
   methods: {
     press(key) {
       this.$emit('tapdown', key)
